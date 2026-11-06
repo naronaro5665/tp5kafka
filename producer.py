@@ -8,38 +8,28 @@ TOPIC = "campus-sensors"
 
 producer = KafkaProducer(
     bootstrap_servers="localhost:9092",
-    value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+    value_serializer=lambda value: json.dumps(value).encode("utf-8"),
     acks="all"
 )
 
-print("Starting sensor producer...")
-
 try:
-    for event_id in range(100):
+    for event_id in range(1, 31):
+
         event = {
             "event_id": event_id,
             "sensor_id": f"sensor-{random.randint(1, 4):02d}",
-            "temperature": round(random.uniform(18, 42), 2),
-            "humidity": round(random.uniform(25, 85), 2),
-            "campus_building": random.choice([
-                "Library",
-                "Laboratory",
-                "Classroom"
-            ]),
+            "temperature_c": round(random.uniform(18, 42), 2),
+            "humidity_pct": round(random.uniform(25, 85), 2),
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
 
         producer.send(TOPIC, value=event)
 
-        print(f"Sent event: {event}")
+        print("Sent:", event)
 
         time.sleep(1)
 
     producer.flush()
-    print("Finished sending 100 events.")
-
-except KeyboardInterrupt:
-    print("Producer stopped.")
 
 finally:
     producer.close()
