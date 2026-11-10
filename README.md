@@ -1,238 +1,101 @@
-# TP05 – Apache Kafka: Real-Time Data Streaming
+## 13. Screenshots and Experimental Evidence
 
-## 1. Project Description
+This section presents the practical implementation and experimental results of TP05, following the order of the assigned tasks.
 
-This project demonstrates real-time data streaming using Apache Kafka and Python. It simulates a campus sensor monitoring system that produces temperature and humidity events and sends them to Kafka topics.
+### 13.1. Task 1 – Kafka Broker Configuration Using Docker
 
-The project uses Docker to run a Kafka broker and Python consumers to process incoming messages.
+**Figure 1. Docker Compose Configuration**
 
-## 2. Objectives
+![Docker Compose Configuration](screenshots/compose.png)
 
-- Configure and run Apache Kafka using Docker Compose.
-- Create Kafka topics and partitions.
-- Implement Python producers to generate sensor events.
-- Implement consumers to receive and process messages.
-- Detect high temperatures (temperature >= 35°C).
-- Calculate the running average temperature.
-- Compare consumers using the same and different consumer groups.
-- Compare topics with one partition and three partitions.
-- Add campus building information to sensor events.
-- Filter events according to the campus building.
-- Save sensor events into CSV files.
+**Figure 2. Running Kafka Docker Container**
 
-## 3. Technologies Used
+![Running Kafka Container](screenshots/composedocker.png)
 
-- Apache Kafka 3.9.1
-- Docker and Docker Compose
-- Python
-- kafka-python-ng 2.2.3
-- JSON
-- CSV
+### 13.2. Task 2 – Python Environment and Kafka Client Installation
 
-## 4. Project Structure
+**Figure 3. Python Environment and Installed Kafka Client**
 
-```text
-tp05-kafka/
-│
-├── compose.yaml
-├── requirements.txt
-├── producer.py
-├── producer_extended.py
-├── consumer.py
-├── consumer2.py
-├── consumer_extended.py
-├── consumer_building.py
-├── events.csv
-├── events_extended.csv
-└── screenshots/
-```
+![Python Environment](screenshots/python2.2.png)
 
-## 5. Kafka Topics
+### 13.3. Task 3 – Kafka Producer Implementation
 
-The following topics were used:
+**Figure 4. Basic Producer Sending Sensor Events**
 
-| Topic | Number of Partitions |
-|---|---:|
-| campus-sensors | 3 |
-| campus-sensors-single | 1 |
-| campus_building | 3 |
+![Basic Producer](screenshots/producer.png)
 
-The replication factor is 1 for these topics.
+**Figure 5. Extended Producer Generating 100 Sensor Events**
 
-## 6. Producer Implementation
+![Extended Producer](screenshots/python_producer.png)
 
-The producer generates sensor events containing:
+### 13.4. Task 4 – Kafka Consumer Implementation
 
-- Event ID
-- Sensor ID
-- Temperature
-- Humidity
-- Timestamp
+**Figure 6. Basic Consumer Receiving Sensor Events**
 
-The extended producer generates 100 events and adds the `campus_building` field.
+![Basic Consumer](screenshots/consumer.png)
 
-Four buildings are used:
+**Figure 7. Second Consumer Execution**
 
-- Library
-- Labs
-- Admin
-- Dorms
+![Second Consumer](screenshots/consumer2.png)
 
-## 7. Consumer Implementation
+**Figure 8. Extended Consumer with Running Average, Temperature Alerts, and CSV Storage**
 
-The consumers perform the following operations:
+![Extended Consumer](screenshots/consumer_extended.png)
 
-- Receive sensor events from Kafka.
-- Display temperature and humidity values.
-- Detect high temperatures.
-- Display an alert when temperature is greater than or equal to 35°C.
-- Calculate the running average temperature.
-- Save received events into CSV files.
+### 13.5. Task 5 – Kafka Topics and Consumer Groups Inspection
 
-## 8. Consumer Groups Experiment
+**Figure 9. Kafka Topics Inspection**
 
-Two consumers were configured with the same consumer group ID:
+![Kafka Topics Inspection](screenshots/Inspect%20Kafka%20Topics.png)
 
-`tp05-campus-monitor`
+**Figure 10. Topic Configuration and Partition Information**
 
-The topic `campus-sensors` has three partitions.
+![Topic Configuration](screenshots/Topic.png)
 
-Kafka distributed the partitions as follows:
+**Figure 11. Consumer Group Information**
 
-| Consumer | Assigned Partitions |
-|---|---|
-| Consumer 1 | 0, 1 |
-| Consumer 2 | 2 |
+![Consumer Group Information](screenshots/Consumer%20group.png)
 
-This experiment demonstrates partition assignment and parallel message processing within a consumer group.
+### 13.6. Further Investigation – Consumer Groups Experiment
 
-Consumers using different group IDs can independently consume the topic's messages.
+**Figure 12. Two Consumers Using the Same Consumer Group**
 
-## 9. Campus Building Experiment
+![Same Consumer Group](screenshots/Same%20Consumer%20Group.png)
 
-The extended producer sends 100 events to `campus-sensors`.
+**Figure 13. Partition Assignment Between Two Consumers in the Same Group**
 
-Each event contains a `campus_building` field.
+![Partition Assignment](screenshots/Message%20Distribution%20Between%20Two%20Consumers%20in%20the%20Same%20Consumer%20Group.png)
 
-The `consumer_building.py` program filters events and displays only those belonging to the Labs building.
+**Figure 14. Additional Comparison of Message Distribution**
 
-The test successfully displayed event 93, which belonged to Labs.
+![Message Distribution Comparison](screenshots/Message%20Distribution%20Between%20Two%20Consumers%20in%20the%20Same%20Consumer%20Group2.png)
 
-## 10. Running the Project
+### 13.7. Further Investigation – Partition Comparison
 
-Start the Kafka service:
+**Figure 15. Topic Configuration with Three Partitions**
 
-```bash
-docker compose up -d
-```
+![Three Partition Configuration](screenshots/comparsion_3partition.png)
 
-Create the topics if they do not already exist.
+**Figure 16. Comparison Between One and Three Partitions**
 
-Install Python dependencies:
+![One and Three Partition Comparison](screenshots/comparsion_3partitionet1partition.png)
 
-```bash
-pip install -r requirements.txt
-```
+**Figure 17. Single-Partition Topic Configuration**
 
-Run the producer:
+![Single Partition Topic](screenshots/campus-sensors-single.png)
 
-```bash
-python producer.py
-```
+### 13.8. Further Investigation – Campus Building Information and Filtering
 
-Run the extended producer:
+**Figure 18. Filtering Sensor Events for the Labs Building**
 
-```bash
-python producer_extended.py
-```
+![Campus Building Filtering](screenshots/building-filter.png)
 
-Run the consumers:
+### 13.9. Additional Experimental Evidence
 
-```bash
-python consumer.py
-```
+**Figure 19. Additional Kafka Terminal Output**
 
-```bash
-python consumer_extended.py
-```
+![Additional Experimental Evidence](screenshots/Screenshot%202026-11-05%20171212.png)
 
-Run the building filter:
+---
 
-```bash
-python consumer_building.py
-```
-
-## 11. Results
-
-The experiments demonstrated:
-
-- Successful Kafka broker configuration.
-- Successful creation of topics with different partition counts.
-- Successful production and consumption of sensor events.
-- High-temperature alert detection.
-- Running average temperature calculation.
-- Message distribution between consumers in the same group.
-- Independent consumption using different consumer groups.
-- Successful transmission of the campus building field.
-- Successful filtering of events by building.
-
-## 12. Conclusion
-
-This project demonstrates the main concepts of Apache Kafka through a practical campus sensor monitoring application. It shows how producers publish events, how consumers process them, and how partitions and consumer groups support distributed message processing.
-
-The extended experiments also demonstrate how additional event attributes can be used for filtering and monitoring purposes.
-## 13. Screenshots
-
-### 1. Kafka and Docker Configuration
-
-![Docker Compose](<screenshots/compose.png>)
-
-![Docker Container](<screenshots/composedocker.png>)
-
-### 2. Kafka Topics
-
-![Kafka Topics](<screenshots/Inspect Kafka Topics.png>)
-
-![Topic Configuration](<screenshots/Topic.png>)
-
-![Single Partition Topic](<screenshots/campus-sensors-single.png>)
-
-### 3. Python Producer
-
-![Python Environment](<screenshots/python2.2.png>)
-
-![Producer](<screenshots/producer.png>)
-
-![Python Producer](<screenshots/python_producer.png>)
-
-### 4. Kafka Consumers
-
-![Consumer](<screenshots/consumer.png>)
-
-![Second Consumer](<screenshots/consumer2.png>)
-
-![Extended Consumer](<screenshots/consumer_extended.png>)
-
-### 5. Consumer Groups and Partition Distribution
-
-![Consumer Group](<screenshots/Consumer group.png>)
-
-![Same Consumer Group](<screenshots/Same Consumer Group.png>)
-
-![Message Distribution](<screenshots/Message Distribution Between Two Consumers in the Same Consumer Group.png>)
-
-![Message Distribution Comparison](<screenshots/Message Distribution Between Two Consumers in the Same Consumer Group2.png>)
-
-### 6. Partition Comparison
-
-![Three Partition Comparison](<screenshots/comparsion_3partition.png>)
-
-![One and Three Partition Comparison](<screenshots/comparsion_3partitionet1partition.png>)
-
-### 7. Campus Building Filtering
-
-![Building Filtering](<screenshots/building-filter.png>)
-
-### 8. Additional Screenshot
-
-![Additional Screenshot](<screenshots/Screenshot 2026-11-05 171212.png>)
+**End of TP05 – Apache Kafka: Real-Time Data Streaming**
